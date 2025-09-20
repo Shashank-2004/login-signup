@@ -131,11 +131,12 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
 
   try {
     // Use relative URL so it works both locally and on Render
-    const res = await fetch("/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData)
-    });
+    const res = await fetch("https://login-relt.onrender.com/api/login", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(formData)
+});
+
 
     const data = await res.json();
 
