@@ -190,7 +190,7 @@
 
   try {
     // 1️⃣ Mark Earthquake Drill completed (backend should increment drill count)
-    const drillRes = await fetch('http://127.0.0.1:5000/api/students/complete-drill', {
+    const drillRes = await fetch('https://login-relt.onrender.com/api/students/complete-drill', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -206,7 +206,7 @@
     }
 
     // 2️⃣ Update preparedness score
-    const scoreRes = await fetch('http://127.0.0.1:5000/api/students/update', {
+    const scoreRes = await fetch('https://login-relt.onrender.com/api/students/update', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

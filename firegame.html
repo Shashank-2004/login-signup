@@ -136,7 +136,7 @@
             }
 
             try {
-                const res = await fetch('http://localhost:5000/api/me', {
+                const res = await fetch('https://login-relt.onrender.com/api/me', {
                     method: 'GET',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -281,7 +281,7 @@
 
     try {
         // 1️⃣ First, record drill completion
-        const drillRes = await fetch('http://127.0.0.1:5000/api/students/complete-drill', {
+        const drillRes = await fetch('https://login-relt.onrender.com/api/students/complete-drill', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -297,7 +297,7 @@
         }
 
         // 2️⃣ Then, update preparedness score
-        const scoreRes = await fetch('http://127.0.0.1:5000/api/students/update', {
+        const scoreRes = await fetch('https://login-relt.onrender.com/api/students/update', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
