@@ -131,7 +131,7 @@
       <h2>Learn More</h2>
       <p>Watch this earthquake drill training video to understand safety procedures.</p>
       <button class="btn-primary" onclick="openModal('videoModal')">📺 Watch Video Guide</button>
-      <a href="earthquakequiz.html" class="btn-link btn-secondary">❓ Take Quiz Game</a>
+      <a href="earthquakeQuiz.html" class="btn-link btn-secondary">❓ Take Quiz Game</a>
     </section>
   </main>
 
@@ -184,7 +184,7 @@
   const token = localStorage.getItem('token');
   if (!token) {
     alert('You must be logged in to save your progress.');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html';
     return;
   }
 
