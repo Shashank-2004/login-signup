@@ -63,104 +63,93 @@
     </div>
 
     <script>
-    function renderChart(score) {
-        const ctx = document.getElementById('scoreChart').getContext('2d');
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: ['Your Score'],
-                datasets: [{
-                    label: 'Preparedness Score',
-                    data: [score],
-                    fill: true,
-                    backgroundColor: 'rgba(11, 116, 222, 0.2)',
-                    borderColor: '#0b74de',
-                    tension: 0.3
-                }]
-            },
-            options: {
-                responsive: true,
-                plugins: { legend: { display: false } },
-                scales: { y: { beginAtZero: true, max: 100 } }
-            }
-        });
-    }
-
-    function moveCompletedTasks(completedDrillsCount) {
-        const pendingList = document.getElementById('pendingTaskList');
-        const completedList = document.getElementById('completedTaskList');
-        const allDrills = Array.from(pendingList.children);
-
-        const drillMap = {
-            'Complete Fire Drill': 1,
-            'Complete Earthquake Drill': 2,
-            'Complete Flood Drill': 3,
-            'Complete Medical Emergency Drill': 4
-        };
-
-        allDrills.forEach(li => {
-            const drillName = li.textContent.trim();
-            if (drillMap[drillName] && drillMap[drillName] <= completedDrillsCount) {
-                completedList.appendChild(li);
-                li.style.color = '#888';
-            }
-        });
-    }
-
-    function logout() {
-        localStorage.removeItem('token');
-        localStorage.removeItem('role');
-        localStorage.removeItem('schoolId');
-        alert('Logged out!');
-        window.location.href = 'index.html';
-    }
-
-    document.addEventListener('DOMContentLoaded', async () => {
-        const token = localStorage.getItem('token');
-        if (!token) {
-            window.location.href = 'index.html';
-            return;
-        }
-
-        async function fetchUser(url) {
-            const res = await fetch(url, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
+        function renderChart(score) {
+            const ctx = document.getElementById('scoreChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Your Score'],
+                    datasets: [{
+                        label: 'Preparedness Score',
+                        data: [score],
+                        fill: true,
+                        backgroundColor: 'rgba(11, 116, 222, 0.2)',
+                        borderColor: '#0b74de',
+                        tension: 0.3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { display: false } },
+                    scales: { y: { beginAtZero: true, max: 100 } }
+                }
             });
-            console.log("Status:", res.status, "URL:", url);
-            const text = await res.text();
-            console.log("Response:", text);
-            if (res.ok) return JSON.parse(text);
-            return null;
         }
 
-        try {
-            // Try /api/me first, then fallback to /
-            let user = await fetchUser('https://login-relt.onrender.com/api/me');
-            if (!user) {
-                user = await fetchUser('https://login-relt.onrender.com/');
+        function moveCompletedTasks(completedDrillsCount) {
+            const pendingList = document.getElementById('pendingTaskList');
+            const completedList = document.getElementById('completedTaskList');
+            const allDrills = Array.from(pendingList.children);
+
+            const drillMap = {
+                'Complete Fire Drill': 1,
+                'Complete Earthquake Drill': 2,
+                'Complete Flood Drill': 3,
+                'Complete Medical Emergency Drill': 4
+            };
+
+            allDrills.forEach(li => {
+                const drillName = li.textContent.trim();
+                if (drillMap[drillName] && drillMap[drillName] <= completedDrillsCount) {
+                    completedList.appendChild(li);
+                    li.style.color = '#888';
+                }
+            });
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('role');
+            localStorage.removeItem('schoolId');
+            alert('Logged out!');
+            // --- FIX 6: Redirect to the correct login page (index.html) ---
+            window.location.href = 'index.html'; 
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                window.location.href = 'index.html';
+                return;
             }
 
-            if (user) {
-                document.getElementById('studentName').textContent = user.name?.split(' ')[0] || "Student";
-                document.getElementById('preparednessScore').textContent = user.preparednessScore || 0;
-                document.getElementById('drillsCompletedCount').textContent = user.drillsCompleted || 0;
+            try {
+                const res = await fetch('https://login-relt.onrender.com/api/me', {
+                    method: 'GET',
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
 
-                renderChart(user.preparednessScore || 0);
-                moveCompletedTasks(user.drillsCompleted || 0);
-            } else {
-                localStorage.clear();
-                alert('Session expired. Please log in again.');
+                if (res.ok) {
+                    const user = await res.json();
+
+                    document.getElementById('studentName').textContent = user.name.split(' ')[0];
+                    document.getElementById('preparednessScore').textContent = user.preparednessScore || 0;
+                    document.getElementById('drillsCompletedCount').textContent = user.drillsCompleted || 0;
+
+                    renderChart(user.preparednessScore || 0);
+                    moveCompletedTasks(user.drillsCompleted || 0);
+                } else {
+                    localStorage.clear();
+                    alert('Session expired. Please log in again.');
+                    window.location.href = 'index.html';
+                }
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                alert('An error occurred. Please try again later.');
                 window.location.href = 'index.html';
             }
-        } catch (error) {
-            console.error('Error fetching user data:', error);
-            alert('An error occurred. Please try again later.');
-            window.location.href = 'index.html';
-        }
-    });
-</script>
-
+        });
+    </script>
 </body>
 </body>
 </html>
