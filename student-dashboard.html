@@ -90,12 +90,14 @@ function moveCompletedTasks(completedDrillsCount) {
     const pendingList = document.getElementById('pendingTaskList');
     const completedList = document.getElementById('completedTaskList');
     const allDrills = Array.from(pendingList.children);
+
     const drillMap = {
         'Complete Fire Drill': 1,
         'Complete Earthquake Drill': 2,
         'Complete Flood Drill': 3,
         'Complete Medical Emergency Drill': 4
     };
+
     allDrills.forEach(li => {
         const drillName = li.textContent.trim();
         if (drillMap[drillName] && drillMap[drillName] <= completedDrillsCount) {
@@ -108,37 +110,43 @@ function moveCompletedTasks(completedDrillsCount) {
 function logout() {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
+    localStorage.removeItem('schoolId');
     alert('Logged out!');
-    window.location.href = 'login.html';
+    window.location.href = 'index.html'; // changed from login.html
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
     const token = localStorage.getItem('token');
-    if (!token) { window.location.href = 'login.html'; return; }
+    if (!token) {
+        window.location.href = 'index.html';
+        return;
+    }
 
     try {
-        const res = await fetch('https://login-relt.onrender.com', {
+        // ✅ Correct API endpoint
+        const res = await fetch('https://login-relt.onrender.com/api/me', {
             method: 'GET',
             headers: { 'Authorization': `Bearer ${token}` }
         });
 
         if (res.ok) {
             const user = await res.json();
+
             document.getElementById('studentName').textContent = user.name.split(' ')[0];
-            document.getElementById('preparednessScore').textContent = user.preparednessScore;
-            document.getElementById('drillsCompletedCount').textContent = user.drillsCompleted;
-            renderChart(user.preparednessScore);
-            moveCompletedTasks(user.drillsCompleted);
+            document.getElementById('preparednessScore').textContent = user.preparednessScore || 0;
+            document.getElementById('drillsCompletedCount').textContent = user.drillsCompleted || 0;
+
+            renderChart(user.preparednessScore || 0);
+            moveCompletedTasks(user.drillsCompleted || 0);
         } else {
-            localStorage.removeItem('token');
-            localStorage.removeItem('role');
+            localStorage.clear();
             alert('Session expired. Please log in again.');
-            window.location.href = 'login.html';
+            window.location.href = 'index.html';
         }
     } catch (error) {
         console.error('Error fetching user data:', error);
         alert('An error occurred. Please try again later.');
-        window.location.href = 'login.html';
+        window.location.href = 'index.html';
     }
 });
 </script>
